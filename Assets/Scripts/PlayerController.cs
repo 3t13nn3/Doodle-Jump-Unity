@@ -16,18 +16,18 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Vector3 movement = Vector3.zero;
+        Vector3 movement = Vector3.zero;
 
-        //if (Input.GetKey(KeyCode.LeftArrow) == true)
-        //    movement += Vector3.left;
-        //if (Input.GetKey(KeyCode.RightArrow) == true)
-        //    movement += Vector3.right;
-        //if (Input.GetKey(KeyCode.UpArrow) == true)
-        //    movement += Vector3.up;
-        //if (Input.GetKey(KeyCode.DownArrow) == true)
-        //    movement += Vector3.down;
+        if (Input.GetKey(KeyCode.LeftArrow) == true)
+            movement += Vector3.left;
+        if (Input.GetKey(KeyCode.RightArrow) == true)
+            movement += Vector3.right;
+        if (Input.GetKey(KeyCode.UpArrow) == true)
+            movement += Vector3.up;
+        if (Input.GetKey(KeyCode.DownArrow) == true)
+            movement += Vector3.down;
 
-        //transform.position += movement * 2.5f * Time.deltaTime;
+        transform.position += movement * 2.5f * Time.deltaTime;
     }
 
     void jump()
