@@ -1024,6 +1024,7 @@ GameObject:
   - component: {fileID: 1516756624}
   - component: {fileID: 1516756623}
   - component: {fileID: 1516756622}
+  - component: {fileID: 1516756625}
   m_Layer: 5
   m_Name: play
   m_TagString: Untagged
@@ -1093,7 +1094,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1516756623}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1516756625}
+        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
+        m_MethodName: LoadScene
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: GameScene
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1516756623
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1132,6 +1145,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1516756620}
   m_CullTransparentMesh: 1
+--- !u!114 &1516756625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1516756620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caae30852732c48c4ae66bee27b78727, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1519742056
 GameObject:
   m_ObjectHideFlags: 0
@@ -1210,6 +1235,7 @@ GameObject:
   - component: {fileID: 1612070106}
   - component: {fileID: 1612070105}
   - component: {fileID: 1612070104}
+  - component: {fileID: 1612070107}
   m_Layer: 5
   m_Name: scores
   m_TagString: Untagged
@@ -1279,7 +1305,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1612070105}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1612070107}
+        m_TargetAssemblyTypeName: SceneLoader, Assembly-CSharp
+        m_MethodName: LoadScene
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: ScoreScene
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1612070105
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1318,6 +1356,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1612070102}
   m_CullTransparentMesh: 1
+--- !u!114 &1612070107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1612070102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: caae30852732c48c4ae66bee27b78727, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1683507103
 GameObject:
   m_ObjectHideFlags: 0
@@ -1510,6 +1560,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1760413997}
   - component: {fileID: 1760413996}
+  - component: {fileID: 1760413998}
   m_Layer: 0
   m_Name: ufo
   m_TagString: Untagged
@@ -1582,6 +1633,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1760413998
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1760413995}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29fc1eac3f9b648639d30faa40763ffd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vitesse: 1
 --- !u!1 &1879339321
 GameObject:
   m_ObjectHideFlags: 0
