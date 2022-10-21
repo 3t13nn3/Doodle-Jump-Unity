@@ -90,7 +90,7 @@ public class PlayerController : MonoBehaviour
 
         bendedTimer += Time.deltaTime;
         attackTimer += Time.deltaTime;
-        transform.position += movement * 2f * Time.deltaTime;
+        transform.position += movement * 2.5f * Time.deltaTime;
         isFalling = rb.velocity.y <= 0;
     }
 
