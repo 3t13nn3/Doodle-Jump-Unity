@@ -1,25 +1,32 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Moving : MonoBehaviour
 {
+    public float speed = 0.3f ;
 
-    private float var;
-
-    public float vitesse = 100; 
+    private Vector3 initialPosition;
     // Update is called once per frame
-    void Update()
+
+    public void Start()
     {
-        if (var ==0)
-        {
-            var = Time.deltaTime;
-        }
-        var = var * -1;
-        transform.Translate(new Vector3(4, 4) *vitesse* var);
-     
+        initialPosition = transform.position;
     }
+
+    private void Update()
+    {
+        float step = speed * Time.deltaTime;
+        //Debug.Log(initialPosition);
+        Vector3 target =  new Vector3(UnityEngine.Random.Range(initialPosition.x -2f, initialPosition.x +2f), UnityEngine.Random.Range(initialPosition.y -2f, initialPosition.y + 2f), 0);
+        //Debug.Log("target : " + target);
+        transform.position = Vector3.Lerp(transform.position, target, step);
+       
+    }
+
 
 }
 

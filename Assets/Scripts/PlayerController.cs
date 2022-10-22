@@ -25,7 +25,7 @@ public class PlayerController : MonoBehaviour
     private readonly int HEAD_UP_WITHOUT_FOOT = 3;
     private readonly int RIGHT_SIDE_WITH_BENDED_LEG = 4;
     private readonly int RIGHT_SIDE = 5;
-
+    
     // Start is called before the first frame update
     void Start()
     {
