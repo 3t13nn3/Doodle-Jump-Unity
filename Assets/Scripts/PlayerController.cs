@@ -179,24 +179,29 @@ public class PlayerController : MonoBehaviour
 
     void OverflowHandle()
     {
+        doodleOverflow.transform.position =
+            new Vector3(doodleOverflow.transform.position.x,
+                doodle.transform.position.y,
+                doodleOverflow.transform.position.z);
+
         // Is doodle cutted ?
         bool over =
             (
-            doodleOverflow.transform.position.x -
-            spriteRenderer.bounds.size.x / 2
-            ) >
-            -1.55f &&
-            (
-            doodleOverflow.transform.position.x +
+            transform.position.x +
+            spriteRenderer.bounds.size.x -
             spriteRenderer.bounds.size.x / 2
             ) <
+            -1.55f ||
+            (
+            transform.position.x -
+            spriteRenderer.bounds.size.x +
+            spriteRenderer.bounds.size.x / 2
+            ) >
             1.55f;
         bool cutLeft =
             (transform.position.x - spriteRenderer.bounds.size.x / 2) < -1.55f;
         bool cutRight =
             (transform.position.x + spriteRenderer.bounds.size.x / 2) > 1.55f;
-
-        doodleOverflow.SetActive(true);
 
         if (over)
         {
@@ -207,11 +212,13 @@ public class PlayerController : MonoBehaviour
         }
         else if (cutLeft)
         {
+            doodleOverflow.SetActive(true);
             doodleOverflow.transform.position =
                 transform.position + new Vector3(3.1f, 0f, 0f);
         }
         else if (cutRight)
         {
+            doodleOverflow.SetActive(true);
             doodleOverflow.transform.position =
                 transform.position - new Vector3(3.1f, 0f, 0f);
         }
