@@ -64,7 +64,7 @@ public class GameElement : MonoBehaviour
             GameObject curr = GameObject.Instantiate(tilesToPick[tileChoose]);
 
             // Positionnig it well
-            float x = (float)(rnd.NextDouble()) * (1.5f - (-1.5f)) + (-1.5f);
+            float x = (float)(rnd.NextDouble()) * (1.25f - (-1.25f)) + (-1.25f);
             curr.transform.position = new Vector3(x, high + 1f, 0f);
 
             curr.SetActive(true);

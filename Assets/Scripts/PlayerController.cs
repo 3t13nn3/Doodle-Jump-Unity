@@ -10,8 +10,6 @@ public class PlayerController : MonoBehaviour
 
     public GameObject doodle;
 
-    public GameObject doodleOverflow;
-
     private Rigidbody2D rb;
 
     private bool isFalling;
@@ -54,14 +52,6 @@ public class PlayerController : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         isFalling = true;
-
-        // Init other doodle for the OverFlow
-        if (doodle.name == "lik-right")
-        {
-            doodleOverflow = GameObject.Instantiate(doodle);
-            doodleOverflow.transform.position = new Vector3(3f, 3f, 3f);
-            doodleOverflow.SetActive(false);
-        }
     }
 
     // Update is called once per frame
@@ -121,7 +111,7 @@ public class PlayerController : MonoBehaviour
         isFalling = rb.velocity.y <= 0;
 
         // Handling Overflow only for the init one
-        if (doodle.name == "lik-right") OverflowHandle();
+        OverflowHandle();
     }
 
     // function which check the collision of the player with other gameobject
@@ -179,48 +169,14 @@ public class PlayerController : MonoBehaviour
 
     void OverflowHandle()
     {
-        doodleOverflow.transform.position =
-            new Vector3(doodleOverflow.transform.position.x,
-                doodle.transform.position.y,
-                doodleOverflow.transform.position.z);
-
-        // Is doodle cutted ?
-        bool over =
-            (
-            transform.position.x +
-            spriteRenderer.bounds.size.x -
-            spriteRenderer.bounds.size.x / 2
-            ) <
-            -1.55f ||
-            (
-            transform.position.x -
-            spriteRenderer.bounds.size.x +
-            spriteRenderer.bounds.size.x / 2
-            ) >
-            1.55f;
-        bool cutLeft =
-            (transform.position.x - spriteRenderer.bounds.size.x / 2) < -1.55f;
-        bool cutRight =
-            (transform.position.x + spriteRenderer.bounds.size.x / 2) > 1.55f;
-
-        if (over)
+        if (transform.position.x + spriteRenderer.bounds.size.x / 2 < -1.55f)
         {
-            Vector3 tmp = transform.position;
-            transform.position = doodleOverflow.transform.position;
-            doodleOverflow.transform.position = tmp;
-            doodleOverflow.SetActive(false);
+            transform.position = new Vector3(1.55f, transform.position.y, 0f);
         }
-        else if (cutLeft)
+        else if (transform.position.x - spriteRenderer.bounds.size.x / 2 > 1.55f
+        )
         {
-            doodleOverflow.SetActive(true);
-            doodleOverflow.transform.position =
-                transform.position + new Vector3(3.1f, 0f, 0f);
-        }
-        else if (cutRight)
-        {
-            doodleOverflow.SetActive(true);
-            doodleOverflow.transform.position =
-                transform.position - new Vector3(3.1f, 0f, 0f);
+            transform.position = new Vector3(-1.55f, transform.position.y, 0f);
         }
     }
 }
