@@ -6,9 +6,13 @@ public class PlayerController : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
 
+    public SpriteRenderer mouthSpriteRenderer;
+
     public Sprite[] sprites;
 
     public GameObject doodle;
+
+    public GameObject projectilePrefab;
 
     private Rigidbody2D rb;
 
@@ -47,6 +51,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        mouthSpriteRenderer.enabled = false;
         lastSide = RIGHT_SIDE;
         currentSpriteIndex = RIGHT_SIDE;
 
@@ -85,7 +90,10 @@ public class PlayerController : MonoBehaviour
                 ChangeSprite(HEAD_UP_WITH_FOOT);
             else
                 ChangeSprite(HEAD_UP_WITHOUT_FOOT);
-            Shoot();
+            if (!isAttacking)
+            {
+                Shoot();
+            }
         }
 
         if (isBended && bendedTimer >= 0.25f)
@@ -148,6 +156,9 @@ public class PlayerController : MonoBehaviour
     // player shoot function
     void Shoot()
     {
+        Vector3 pos = transform.position;
+        pos.Set(pos.x, pos.y + 0.5f, pos.z);
+        Instantiate(projectilePrefab, pos, Quaternion.identity);
         isAttacking = true;
         attackTimer = 0f;
     }
@@ -162,9 +173,9 @@ public class PlayerController : MonoBehaviour
      */
     void ChangeSprite(int spriteIndex)
     {
-        Debug.Log (spriteIndex);
         currentSpriteIndex = spriteIndex;
         spriteRenderer.sprite = sprites[spriteIndex];
+        mouthSpriteRenderer.enabled = (spriteIndex == 2 || spriteIndex == 3);
     }
 
     void OverflowHandle()

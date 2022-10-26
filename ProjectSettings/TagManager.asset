@@ -7,6 +7,7 @@ TagManager:
   - green_tile
   - brown_tile
   - blue_tile
+  - destroyer
   layers:
   - Default
   - TransparentFX
