@@ -18,7 +18,7 @@ public class DestroyerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("destroy");
-        Destroy(collision.gameObject);
+        if (collision.gameObject.CompareTag("projectile"))
+            Destroy(collision.gameObject);
     }
 }

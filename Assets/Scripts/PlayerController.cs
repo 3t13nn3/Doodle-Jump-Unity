@@ -138,8 +138,11 @@ public class PlayerController : MonoBehaviour
                 Jump (defaultJumpHeight);
                 ChangeSprite(currentSpriteIndex - 1);
             }
-            // else destroy tiles
-            // ...
+            //if (other.gameObject.CompareTag("brown_tile"))
+            //{
+            //    Debug.Log("destroy brown tile");
+            //    Destroy(other.gameObject);
+            //}
         }
     }
 

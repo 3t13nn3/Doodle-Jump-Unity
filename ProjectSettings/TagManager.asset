@@ -8,6 +8,7 @@ TagManager:
   - brown_tile
   - blue_tile
   - destroyer
+  - projectile
   layers:
   - Default
   - TransparentFX
