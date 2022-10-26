@@ -14,6 +14,10 @@ public class PlayerController : MonoBehaviour
 
     public GameObject projectilePrefab;
 
+    public AudioClip[] audioClipArray;
+
+    public AudioSource audioSource;
+
     private Rigidbody2D rb;
 
     private bool isFalling;
@@ -51,6 +55,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
+
         mouthSpriteRenderer.enabled = false;
         lastSide = RIGHT_SIDE;
         currentSpriteIndex = RIGHT_SIDE;
@@ -90,7 +96,7 @@ public class PlayerController : MonoBehaviour
                 ChangeSprite(HEAD_UP_WITH_FOOT);
             else
                 ChangeSprite(HEAD_UP_WITHOUT_FOOT);
-            if (!isAttacking)
+            if (attackTimer >= 0.15f)
             {
                 Shoot();
             }
@@ -151,6 +157,8 @@ public class PlayerController : MonoBehaviour
     {
         isBended = true;
         bendedTimer = 0f;
+        audioSource.PlayOneShot(audioClipArray[0]);
+
         Vector2 velocity = rb.velocity;
         velocity.y = height;
         rb.velocity = velocity;
@@ -161,6 +169,7 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 pos = transform.position;
         pos.Set(pos.x, pos.y + 0.5f, pos.z);
+        audioSource.PlayOneShot(audioClipArray[1]);
         Instantiate(projectilePrefab, pos, Quaternion.identity);
         isAttacking = true;
         attackTimer = 0f;
