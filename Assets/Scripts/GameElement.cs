@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GameElement : MonoBehaviour
 {
@@ -15,12 +16,16 @@ public class GameElement : MonoBehaviour
 
     public GameObject hole;
 
+    public GameObject springPrefab;
+
     // In percent
     private float brownTileRNG = 15;
 
     private float blueTileRNG = 25;
 
     private float greenTileRNG = 60;
+
+    private float objGenPb = 0.8f;
 
     private List<GameObject> tiles = new List<GameObject>();
 
@@ -91,6 +96,15 @@ public class GameElement : MonoBehaviour
             spriteRenderer.maskInteraction =
                 SpriteMaskInteraction.VisibleOutsideMask;
             tiles.Add (curr);
+
+            // Generate objects like spring, propeller and jetpack on platform except brown tile
+            if (tileChoose != 0 && Random.Range(0, 1) <= objGenPb)
+            {
+                Vector3 pos = curr.transform.position;
+                pos.Set(pos.x, pos.y + 0.2f, pos.z);
+                Instantiate(springPrefab, pos, Quaternion.identity);
+            }
+
             if (tileChoose != 0)
             {
                 high += (float)(rnd.NextDouble()) * (0.95f - (0.8f)) + (0.8f);
@@ -134,7 +148,7 @@ public class GameElement : MonoBehaviour
     }
 
     void EnemysHandler() {
-        Debug.Log(enemysCurr[enemyIndex].transform.position);
+        //Debug.Log(enemysCurr[enemyIndex].transform.position);
         System.Random rnd = new System.Random();
         if(doodle.transform.position.y > enemysCurr[enemyIndex].transform.position.y + 12f) {
             float x = (float)(rnd.NextDouble()) * (1.05f - (-1.05f)) + (-1.05f);

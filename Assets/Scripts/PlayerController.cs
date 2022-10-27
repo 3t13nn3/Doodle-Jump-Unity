@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     // two types of height when player jump
     private readonly float defaultJumpHeight = 5f;
 
-    private readonly float springJumpHeight = 10f;
+    private readonly float springJumpHeight = 8f;
 
     private readonly int LEFT_SIDE_WITH_BENDED_LEG = 0;
 
@@ -137,12 +137,17 @@ public class PlayerController : MonoBehaviour
         if (isFalling)
         {
             // jump only when tiles are green, blue or white
-            if (
-                (other.gameObject.CompareTag("green_tile")) ||
-                (other.gameObject.CompareTag("blue_tile"))
-            )
+            if ((other.gameObject.CompareTag("green_tile")) || (other.gameObject.CompareTag("blue_tile")))
             {
                 Jump (defaultJumpHeight);
+                audioSource.PlayOneShot(audioClipArray[0]);
+                ChangeSprite(currentSpriteIndex - 1);
+            }
+            if (other.gameObject.CompareTag("spring"))
+            {
+                Jump(springJumpHeight);
+                ((SpringController) other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
+                audioSource.PlayOneShot(audioClipArray[3]);
                 ChangeSprite(currentSpriteIndex - 1);
             }
             //if (other.gameObject.CompareTag("brown_tile"))
@@ -166,7 +171,6 @@ public class PlayerController : MonoBehaviour
     {
         isBended = true;
         bendedTimer = 0f;
-        audioSource.PlayOneShot(audioClipArray[0]);
 
         Vector2 velocity = rb.velocity;
         velocity.y = height;
