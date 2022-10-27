@@ -26,6 +26,8 @@ public class GameElement : MonoBehaviour
 
     public List<GameObject> enemys = new List<GameObject>();
 
+    public List<GameObject> enemysCurr = new List<GameObject>();
+
     private float high = -1.5f;
 
     private float score = 0;
@@ -45,6 +47,12 @@ public class GameElement : MonoBehaviour
 
         System.Random rnd = new System.Random();
         enemyIndex = rnd.Next(1, 5);
+
+        hole = Instantiate(hole, new Vector3(0f, -10f, 0f), Quaternion.identity);
+        foreach (var e in enemys)
+        {
+            enemysCurr.Add(Instantiate(e, new Vector3(0f, -10f, 0f), Quaternion.identity));
+        }
     }
 
     // Let's keep at least 15 tiles around doodle
@@ -126,28 +134,15 @@ public class GameElement : MonoBehaviour
     }
 
     void EnemysHandler() {
+        Debug.Log(enemysCurr[enemyIndex].transform.position);
         System.Random rnd = new System.Random();
-        if(doodle.transform.position.y > enemys[enemyIndex].transform.position.y + 12f) {
+        if(doodle.transform.position.y > enemysCurr[enemyIndex].transform.position.y + 12f) {
             float x = (float)(rnd.NextDouble()) * (1.05f - (-1.05f)) + (-1.05f);
             //pick an enemy
             enemyIndex = rnd.Next(1, 5);
-            enemys[enemyIndex].transform.position = new Vector3(x, doodle.transform.position.y + 4f, 0f);
+            enemysCurr[enemyIndex].transform.position = new Vector3(x, doodle.transform.position.y + rnd.Next(4, 10), 0f);
+            Debug.Log(enemysCurr[enemyIndex].transform.position);
         }
-
-        // Animation
-        
-        SpriteRenderer spriteRenderer = enemys[enemyIndex].GetComponent<SpriteRenderer>();
-        
-        if(side && enemys[enemyIndex].transform.position.x - spriteRenderer.bounds.size.x / 2 > -1.55f) {
-            enemys[enemyIndex].transform.position = new Vector3(enemys[enemyIndex].transform.position.x - 0.005f, enemys[enemyIndex].transform.position.y, 0f);
-        } else if (!side && enemys[enemyIndex].transform.position.x + spriteRenderer.bounds.size.x / 2 < 1.55f) {
-            enemys[enemyIndex].transform.position = new Vector3(enemys[enemyIndex].transform.position.x + 0.005f, enemys[enemyIndex].transform.position.y, 0f);
-        }
-
-        if (side && enemys[enemyIndex].transform.position.x - spriteRenderer.bounds.size.x / 2 < -1.55f || enemys[enemyIndex].transform.position.x + spriteRenderer.bounds.size.x / 2 > 1.55f) {
-            side = !side;
-        }
-        
         
     }
 
