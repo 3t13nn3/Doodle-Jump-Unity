@@ -12,6 +12,8 @@ public class PlayerController : MonoBehaviour
 
     public GameObject doodle;
 
+    public GameObject hole;
+
     public GameObject projectilePrefab;
 
     public AudioClip[] audioClipArray;
@@ -137,8 +139,7 @@ public class PlayerController : MonoBehaviour
             // jump only when tiles are green, blue or white
             if (
                 (other.gameObject.CompareTag("green_tile")) ||
-                (other.gameObject.CompareTag("blue_tile")) ||
-                (other.gameObject.CompareTag("white_tile"))
+                (other.gameObject.CompareTag("blue_tile"))
             )
             {
                 Jump (defaultJumpHeight);
@@ -150,6 +151,14 @@ public class PlayerController : MonoBehaviour
             //    Destroy(other.gameObject);
             //}
         }
+
+        if (other.gameObject.CompareTag("hole")) {
+
+            //rb.velocity = new Vector3(0f, 0f, 0f);
+            rb.bodyType = RigidbodyType2D.Static;
+            doodle.transform.position = Vector3.MoveTowards(doodle.transform.position, hole.transform.position, 20 * Time.deltaTime);    
+        }
+
     }
 
     // player jump function

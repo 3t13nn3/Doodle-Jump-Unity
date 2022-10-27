@@ -9,6 +9,7 @@ TagManager:
   - blue_tile
   - destroyer
   - projectile
+  - hole
   layers:
   - Default
   - TransparentFX

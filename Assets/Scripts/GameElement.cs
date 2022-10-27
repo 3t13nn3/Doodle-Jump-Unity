@@ -13,6 +13,8 @@ public class GameElement : MonoBehaviour
 
     public GameObject background;
 
+    public GameObject hole;
+
     // In percent
     private float brownTileRNG = 15;
 
@@ -22,6 +24,8 @@ public class GameElement : MonoBehaviour
 
     private List<GameObject> tiles = new List<GameObject>();
 
+    public List<GameObject> enemys = new List<GameObject>();
+
     private float high = -1.5f;
 
     private float score = 0;
@@ -30,10 +34,17 @@ public class GameElement : MonoBehaviour
 
     private float backgroundHeight;
 
+    private int enemyIndex;
+
+    private bool side = true;
+
     // Start is called before the first frame update
     void Start()
     {
         backgroundHeight = background.GetComponent<Renderer>().bounds.extents.y;
+
+        System.Random rnd = new System.Random();
+        enemyIndex = rnd.Next(1, 5);
     }
 
     // Let's keep at least 15 tiles around doodle
@@ -45,7 +56,7 @@ public class GameElement : MonoBehaviour
             // Choosing which tile we pick
             int tileChoose = 0;
             int rng = rnd.Next(1, 100);
-            Debug.Log (rng);
+            //Debug.Log (rng);
             if (rng < brownTileRNG)
             {
                 tileChoose = 0;
@@ -65,8 +76,7 @@ public class GameElement : MonoBehaviour
 
             // Positionnig it well
             float x = (float)(rnd.NextDouble()) * (1.25f - (-1.25f)) + (-1.25f);
-            curr.transform.position = new Vector3(x, high + 1f, 0f);
-
+            curr.transform.position = new Vector3(x, high + 0.7f, 0f);
             curr.SetActive(true);
 
             SpriteRenderer spriteRenderer = curr.GetComponent<SpriteRenderer>();
@@ -83,11 +93,62 @@ public class GameElement : MonoBehaviour
             }
         }
 
-        if (doodle.transform.position.y - tiles[0].transform.position.y > 5.0f)
+        if (doodle.transform.position.y - tiles[0].transform.position.y > 3.25f)
         {
             Destroy(tiles[0]);
             tiles.RemoveAt(0);
         }
+    }
+
+    bool IsGameObjectCollidedWithTiles(GameObject o) {
+        
+        foreach (GameObject e in tiles)
+        {
+            if(Math.Abs(o.transform.position.x - e.transform.position.x) > 0.2f && Math.Abs(o.transform.position.y - e.transform.position.y) > 0.2f) {
+                continue;
+            } else {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    void HoleHandler() {
+        System.Random rnd = new System.Random();
+        if(doodle.transform.position.y > hole.transform.position.y + 15f) {
+            float x = (float)(rnd.NextDouble()) * (1.05f - (-1.05f)) + (-1.05f);
+            hole.transform.position = new Vector3(x, doodle.transform.position.y + 4f, 0f);
+            while(IsGameObjectCollidedWithTiles(hole)) {
+                hole.transform.position = new Vector3(hole.transform.position.x - 0.05f, hole.transform.position.y + 0.2f, 0f);
+            }
+        }
+    }
+
+    void EnemysHandler() {
+        System.Random rnd = new System.Random();
+        if(doodle.transform.position.y > enemys[enemyIndex].transform.position.y + 12f) {
+            float x = (float)(rnd.NextDouble()) * (1.05f - (-1.05f)) + (-1.05f);
+            //pick an enemy
+            enemyIndex = rnd.Next(1, 5);
+            enemys[enemyIndex].transform.position = new Vector3(x, doodle.transform.position.y + 4f, 0f);
+        }
+
+        // Animation
+        
+        SpriteRenderer spriteRenderer = enemys[enemyIndex].GetComponent<SpriteRenderer>();
+        
+        if(side && enemys[enemyIndex].transform.position.x - spriteRenderer.bounds.size.x / 2 > -1.55f) {
+            enemys[enemyIndex].transform.position = new Vector3(enemys[enemyIndex].transform.position.x - 0.005f, enemys[enemyIndex].transform.position.y, 0f);
+        } else if (!side && enemys[enemyIndex].transform.position.x + spriteRenderer.bounds.size.x / 2 < 1.55f) {
+            enemys[enemyIndex].transform.position = new Vector3(enemys[enemyIndex].transform.position.x + 0.005f, enemys[enemyIndex].transform.position.y, 0f);
+        }
+
+        if (side && enemys[enemyIndex].transform.position.x - spriteRenderer.bounds.size.x / 2 < -1.55f || enemys[enemyIndex].transform.position.x + spriteRenderer.bounds.size.x / 2 > 1.55f) {
+            side = !side;
+        }
+        
+        
     }
 
     // Update is called once per frame
@@ -95,10 +156,17 @@ public class GameElement : MonoBehaviour
     {
         // This could be the score
         score = Math.Max(score, doodle.transform.position.y);
-        Debug.Log((int)(score * 100));
+        //Debug.Log((int)(score * 100));
 
         //Handling Tiles Generation
         TilesHandler();
+
+        // Handling Hole
+        if(tiles.Count != 0)
+            HoleHandler();
+
+        // Handling Enemys
+        EnemysHandler();
 
         // Handling sprite masks by following doodle high
         foreach (var e in masks)
@@ -111,7 +179,7 @@ public class GameElement : MonoBehaviour
 
         // Handling Background overflow
         // HARDCODED CAMERA SIZE 3.071246
-        Debug.Log(background.transform.position.y);
+        //Debug.Log(background.transform.position.y);
         if (
             doodle.transform.position.y + 3.071246 - backgroundHeight >
             transform.position.y &&
