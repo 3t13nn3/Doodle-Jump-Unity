@@ -42,6 +42,12 @@ public class PlayerController : MonoBehaviour
 
     private int lastSide;
 
+    private GameObject holeObj;
+
+    private bool gameover;
+
+    private float angle;
+
     // two types of height when player jump
     private readonly float defaultJumpHeight = 5f;
 
@@ -77,90 +83,109 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         isFalling = true;
         hasObj = false;
+        gameover = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 movement = Vector3.zero;
-
-        if (Input.GetKey(KeyCode.LeftArrow) == true)
+        if (!gameover)
         {
-            movement += Vector3.left;
-            lastSide = LEFT_SIDE;
-            if (isBended)
-                ChangeSprite(LEFT_SIDE_WITH_BENDED_LEG);
-            else
-                ChangeSprite(LEFT_SIDE);
-        }
+            Vector3 movement = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.RightArrow) == true)
-        {
-            movement += Vector3.right;
-            lastSide = RIGHT_SIDE;
-            if (isBended)
-                ChangeSprite(RIGHT_SIDE_WITH_BENDED_LEG);
-            else
-                ChangeSprite(RIGHT_SIDE);
-        }
-
-        if (Input.GetKey(KeyCode.UpArrow) == true)
-        {
-            if (isBended)
-                ChangeSprite(HEAD_UP_WITH_FOOT);
-            else
-                ChangeSprite(HEAD_UP_WITHOUT_FOOT);
-            if (attackTimer >= 0.15f && !hasObj)
+            if (Input.GetKey(KeyCode.LeftArrow) == true)
             {
-                Shoot();
+                movement += Vector3.left;
+                lastSide = LEFT_SIDE;
+                if (isBended)
+                    ChangeSprite(LEFT_SIDE_WITH_BENDED_LEG);
+                else
+                    ChangeSprite(LEFT_SIDE);
             }
-        }
 
-        if (isBended && bendedTimer >= 0.25f)
-        {
-            isBended = false;
-            bendedTimer = 0f;
-            if (isAttacking)
-                ChangeSprite(HEAD_UP_WITHOUT_FOOT);
+            if (Input.GetKey(KeyCode.RightArrow) == true)
+            {
+                movement += Vector3.right;
+                lastSide = RIGHT_SIDE;
+                if (isBended)
+                    ChangeSprite(RIGHT_SIDE_WITH_BENDED_LEG);
+                else
+                    ChangeSprite(RIGHT_SIDE);
+            }
+
+            if (Input.GetKey(KeyCode.UpArrow) == true)
+            {
+                if (isBended)
+                    ChangeSprite(HEAD_UP_WITH_FOOT);
+                else
+                    ChangeSprite(HEAD_UP_WITHOUT_FOOT);
+                if (attackTimer >= 0.15f && !hasObj)
+                {
+                    Shoot();
+                }
+            }
+
+            if (isBended && bendedTimer >= 0.25f)
+            {
+                isBended = false;
+                bendedTimer = 0f;
+                if (isAttacking)
+                    ChangeSprite(HEAD_UP_WITHOUT_FOOT);
+                else
+                    ChangeSprite(lastSide);
+            }
+
+            if (isAttacking && attackTimer >= 0.25f)
+            {
+                isAttacking = false;
+                attackTimer = 0f;
+                ChangeSprite (lastSide);
+            }
+
+            bendedTimer += Time.deltaTime;
+            attackTimer += Time.deltaTime;
+            if (objTimer <= 0.0f && myObj != null)
+            {
+                hasObj = false;
+                rb.gravityScale = 1.0f;
+            }
+
+            if (hasObj && objTimer > 0.0f)
+            {
+                transform.position += movement * 2.5f * Time.deltaTime;
+                rb.velocity = transform.up * propellerSpeed;
+                objTimer -= Time.deltaTime;
+            }
             else
-                ChangeSprite(lastSide);
-        }
+            {
+                transform.position += movement * 2.5f * Time.deltaTime;
+                isFalling = rb.velocity.y <= 0;
+            }
 
-        if (isAttacking && attackTimer >= 0.25f)
-        {
-            isAttacking = false;
-            attackTimer = 0f;
-            ChangeSprite (lastSide);
-        }
-
-        bendedTimer += Time.deltaTime;
-        attackTimer += Time.deltaTime;
-        if (objTimer <= 0.0f && myObj != null)
-        {
-            hasObj = false;
-            rb.gravityScale = 1.0f;
-        }
-
-        if (hasObj && objTimer > 0.0f)
-        {
-            transform.position += movement * 2.5f * Time.deltaTime;
-            rb.velocity = transform.up * propellerSpeed;
-            objTimer -= Time.deltaTime;
+            // Handling Overflow only for the init one
+            OverflowHandle();
         }
         else
         {
-            transform.position += movement * 2.5f * Time.deltaTime;
-            isFalling = rb.velocity.y <= 0;
+            angle += 0.02f + Time.deltaTime;
+            Vector3 offset = new Vector3(Mathf.Sin(angle) * 0.2f, Mathf.Cos(angle) * 0.2f, holeObj.transform.position.z);
+            transform.position = holeObj.transform.position + offset;
         }
-
-        // Handling Overflow only for the init one
-        OverflowHandle();
     }
 
     // function which check the collision of the player with other gameobject
     void OnTriggerEnter2D(Collider2D other)
     {
-        // player enter in collision only when he is falling
+        if (other.gameObject.CompareTag("hole"))
+        {
+            if (!gameover)
+                audioSource.PlayOneShot(audioClipArray[6]);
+                gameover = true;
+                holeObj = other.gameObject;
+            //rb.bodyType = RigidbodyType2D.Static;
+            //doodle.transform.position = Vector3.MoveTowards(doodle.transform.position, hole.transform.position, 20 * Time.deltaTime);
+        }
+        
         if (!hasObj)
         {
             if (other.gameObject.CompareTag("propeller"))
@@ -200,15 +225,6 @@ public class PlayerController : MonoBehaviour
                     audioSource.PlayOneShot(audioClipArray[3]);
                     ChangeSprite(currentSpriteIndex - 1);
                 }
-            }
-        }
-        else
-        {
-            if (other.gameObject.CompareTag("hole")) {
-
-                //rb.velocity = new Vector3(0f, 0f, 0f);
-                rb.bodyType = RigidbodyType2D.Static;
-                doodle.transform.position = Vector3.MoveTowards(doodle.transform.position, hole.transform.position, 20 * Time.deltaTime);    
             }
         }
     }

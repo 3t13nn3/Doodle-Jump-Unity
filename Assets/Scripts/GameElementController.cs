@@ -15,7 +15,7 @@ public class GameElementController : MonoBehaviour
 
     public GameObject background;
 
-    public GameObject hole;
+    public GameObject holePrefab;
 
     public GameObject[] objPrefab;
 
@@ -26,7 +26,7 @@ public class GameElementController : MonoBehaviour
 
     private float greenTileRNG = 60;
 
-    private float objGenPb = 0.8f;
+    private float objGenPb = 0.15f;
 
     public static int nb_tiles = 0;
 
@@ -54,7 +54,6 @@ public class GameElementController : MonoBehaviour
         System.Random rnd = new System.Random();
         enemyIndex = rnd.Next(1, 5);
 
-        //hole = Instantiate(hole, new Vector3(0f, -10f, 0f), Quaternion.identity);
         foreach (var e in enemys)
         {
             enemysCurr.Add(Instantiate(e, new Vector3(0f, -10f, 0f), Quaternion.identity));
@@ -91,14 +90,15 @@ public class GameElementController : MonoBehaviour
             GameObject tile = Instantiate(tilesToPick[tileChoose], tile_pos, Quaternion.identity);
 
             // Generate objects like spring, propeller and jetpack on platform except brown tile
-            if (tileChoose != 0 && Random.Range(0, 1) <= objGenPb)
+            if (tileChoose != 0 && Random.Range(0.0f, 1.0f) <= objGenPb)
             {
-                int obj_index = Random.Range(0, 2);
+                float pb = Random.Range(0.0f, 1.0f);
                 Vector3 pos = tile_pos;
-                if (obj_index == 0)
+                if (pb <= 0.85)
                     pos.Set(pos.x, pos.y + 0.2f, pos.z);
-                else if (obj_index == 1)
+                else
                     pos.Set(pos.x - 0.15f, pos.y + 0.05f, pos.z);
+                int obj_index = pb <= 0.85 ? 0 : 1;
                 GameObject obj = Instantiate(objPrefab[obj_index], pos, Quaternion.identity);
                 obj.transform.parent = tile.transform;
             }
@@ -116,7 +116,7 @@ public class GameElementController : MonoBehaviour
         }
     }
 
-    bool IsGameObjectCollidedWithTiles(GameObject o) {
+    bool IsGameObjectCollidedWithTiles(Vector3 o) {
         GameObject[] gtiles = GameObject.FindGameObjectsWithTag("green_tile");
         GameObject[] bltiles = GameObject.FindGameObjectsWithTag("blue_tile");
         GameObject[] brtiles = GameObject.FindGameObjectsWithTag("brown_tile");
@@ -124,7 +124,7 @@ public class GameElementController : MonoBehaviour
         //GameObject[] tiles = GameObject.FindGameObjectsWithTag("white_tile");
         foreach (GameObject e in tiles)
         {
-            if(Math.Abs(o.transform.position.x - e.transform.position.x) > 0.2f && Math.Abs(o.transform.position.y - e.transform.position.y) > 0.2f) {
+            if(Math.Abs(o.x - e.transform.position.x) > 0.2f && Math.Abs(o.y - e.transform.position.y) > 0.2f) {
                 continue;
             } else {
                 return true;
@@ -135,13 +135,14 @@ public class GameElementController : MonoBehaviour
     }
 
     void HoleHandler() {
-        System.Random rnd = new System.Random();
-        if(doodle.transform.position.y > hole.transform.position.y + 15f) {
-            float x = (float)(rnd.NextDouble()) * (1.05f - (-1.05f)) + (-1.05f);
-            hole.transform.position = new Vector3(x, doodle.transform.position.y + 4f, 0f);
-            while(IsGameObjectCollidedWithTiles(hole)) {
-                hole.transform.position = new Vector3(hole.transform.position.x - 0.05f, hole.transform.position.y + 0.2f, 0f);
-            }
+        //if (Random.Range(0.0f, 1.0f) < 0.0005)
+        if (Random.Range(0.0f, 1.0f) < 0.0005)
+        {
+            float x = Random.Range(0.0f, 1.0f) * (1.05f - (-1.05f)) + (-1.05f);
+            Vector3 hole_pos = new Vector3(x, doodle.transform.position.y + 4f, 0f);
+            while (IsGameObjectCollidedWithTiles(hole_pos)) 
+                hole_pos = new Vector3(hole_pos.x - 0.05f, hole_pos.y + 0.2f, 0f);
+            Instantiate(holePrefab, hole_pos, Quaternion.identity);
         }
     }
 
