@@ -19,6 +19,10 @@ public class GameElementController : MonoBehaviour
 
     public GameObject[] objPrefab;
 
+    public GameObject[] monsterPrefab;
+
+    public AudioSource audioSource;
+
     // In percent
     private float brownTileRNG = 15;
 
@@ -29,10 +33,6 @@ public class GameElementController : MonoBehaviour
     private float objGenPb = 0.15f;
 
     public static int nb_tiles = 0;
-
-    public List<GameObject> enemys = new List<GameObject>();
-
-    public List<GameObject> enemysCurr = new List<GameObject>();
 
     private float high = -1.5f;
 
@@ -50,14 +50,7 @@ public class GameElementController : MonoBehaviour
     void Start()
     {
         backgroundHeight = background.GetComponent<Renderer>().bounds.extents.y;
-
-        System.Random rnd = new System.Random();
-        enemyIndex = rnd.Next(1, 5);
-
-        foreach (var e in enemys)
-        {
-            enemysCurr.Add(Instantiate(e, new Vector3(0f, -10f, 0f), Quaternion.identity));
-        }
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Let's keep at least 15 tiles around doodle
@@ -148,12 +141,14 @@ public class GameElementController : MonoBehaviour
 
     void EnemysHandler() {
         //Debug.Log(enemysCurr[enemyIndex].transform.position);
-        System.Random rnd = new System.Random();
-        if(doodle.transform.position.y > enemysCurr[enemyIndex].transform.position.y + 12f) {
-            float x = (float)(rnd.NextDouble()) * (1.05f - (-1.05f)) + (-1.05f);
+        if (Random.Range(0.0f, 1.0f) < 0.0005)
+        {
+            float x = Random.Range(0.0f, 1.0f) * (1.05f - (-1.05f)) + (-1.05f);
             //pick an enemy
-            enemyIndex = rnd.Next(1, 5);
-            enemysCurr[enemyIndex].transform.position = new Vector3(x, doodle.transform.position.y + rnd.Next(4, 10), 0f);
+            int monster_index = Random.Range(0, 5);
+            Vector3 monster_pos = new Vector3(x, doodle.transform.position.y + Random.Range(4, 11), 0f);
+            Instantiate(monsterPrefab[monster_index], monster_pos, Quaternion.identity);
+            audioSource.PlayOneShot(audioSource.clip);
             //Debug.Log(enemysCurr[enemyIndex].transform.position);
         }
         

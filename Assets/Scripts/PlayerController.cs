@@ -167,63 +167,75 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            angle += 0.02f + Time.deltaTime;
-            Vector3 offset = new Vector3(Mathf.Sin(angle) * 0.2f, Mathf.Cos(angle) * 0.2f, holeObj.transform.position.z);
-            transform.position = holeObj.transform.position + offset;
+            if (holeObj == null)
+            {
+                rb.velocity = -transform.up * 5f;
+            }
+            else
+            {
+                angle += 0.02f + Time.deltaTime;
+                Vector3 offset = new Vector3(Mathf.Sin(angle) * 0.2f, Mathf.Cos(angle) * 0.2f, holeObj.transform.position.z);
+                transform.position = holeObj.transform.position + offset;
+            }
         }
     }
 
     // function which check the collision of the player with other gameobject
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("hole"))
-        {
-            if (!gameover)
-                audioSource.PlayOneShot(audioClipArray[6]);
-                gameover = true;
-                holeObj = other.gameObject;
-            //rb.bodyType = RigidbodyType2D.Static;
-            //doodle.transform.position = Vector3.MoveTowards(doodle.transform.position, hole.transform.position, 20 * Time.deltaTime);
-        }
-        
-        if (!hasObj)
-        {
-            if (other.gameObject.CompareTag("propeller"))
+        if (!gameover) 
+        { 
+            if (other.gameObject.CompareTag("hole"))
             {
-                hasObj = true;
-                myObj = other.gameObject;
-
-                Vector3 pos = transform.position;
-                pos.Set(pos.x - 0.18f, pos.y + 0.07f, pos.z);
-                other.transform.position = pos;
-                other.transform.parent = gameObject.transform;
-                rb.gravityScale = 0.0f;
-                objTimer = 3.5f;
-
-                ((PropellerController)other.gameObject.GetComponent(typeof(PropellerController))).activate();
-                audioSource.PlayOneShot(audioClipArray[5]);
+                if (!gameover)
+                    audioSource.PlayOneShot(audioClipArray[6]);
+                    gameover = true;
+                    holeObj = other.gameObject;
+            }
+            if (other.gameObject.CompareTag("monster"))
+            {
+                gameover = true;
             }
 
-            if (isFalling)
+            if (!hasObj)
             {
-                // jump only when tiles are green, blue or white
-                if ((other.gameObject.CompareTag("green_tile")) || (other.gameObject.CompareTag("blue_tile")))
+                if (other.gameObject.CompareTag("propeller"))
                 {
-                    Jump(defaultJumpHeight);
-                    audioSource.PlayOneShot(audioClipArray[0]);
-                    ChangeSprite(currentSpriteIndex - 1);
+                    hasObj = true;
+                    myObj = other.gameObject;
+
+                    Vector3 pos = transform.position;
+                    pos.Set(pos.x - 0.18f, pos.y + 0.07f, pos.z);
+                    other.transform.position = pos;
+                    other.transform.parent = gameObject.transform;
+                    rb.gravityScale = 0.0f;
+                    objTimer = 3.5f;
+
+                    ((PropellerController)other.gameObject.GetComponent(typeof(PropellerController))).activate();
+                    audioSource.PlayOneShot(audioClipArray[5]);
                 }
-                else if (other.gameObject.CompareTag("brown_tile"))
+
+                if (isFalling)
                 {
-                    audioSource.PlayOneShot(audioClipArray[4]);
-                    ((BrownTileController)other.gameObject.GetComponent(typeof(BrownTileController))).destroy();
-                }
-                else if (other.gameObject.CompareTag("spring"))
-                {
-                    Jump(springJumpHeight);
-                    ((SpringController)other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
-                    audioSource.PlayOneShot(audioClipArray[3]);
-                    ChangeSprite(currentSpriteIndex - 1);
+                    // jump only when tiles are green, blue or white
+                    if ((other.gameObject.CompareTag("green_tile")) || (other.gameObject.CompareTag("blue_tile")))
+                    {
+                        Jump(defaultJumpHeight);
+                        audioSource.PlayOneShot(audioClipArray[0]);
+                        ChangeSprite(currentSpriteIndex - 1);
+                    }
+                    else if (other.gameObject.CompareTag("brown_tile"))
+                    {
+                        audioSource.PlayOneShot(audioClipArray[4]);
+                        ((BrownTileController)other.gameObject.GetComponent(typeof(BrownTileController))).destroy();
+                    }
+                    else if (other.gameObject.CompareTag("spring"))
+                    {
+                        Jump(springJumpHeight);
+                        ((SpringController)other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
+                        audioSource.PlayOneShot(audioClipArray[3]);
+                        ChangeSprite(currentSpriteIndex - 1);
+                    }
                 }
             }
         }
