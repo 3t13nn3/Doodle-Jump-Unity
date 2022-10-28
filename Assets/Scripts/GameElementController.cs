@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -22,6 +23,14 @@ public class GameElementController : MonoBehaviour
     public GameObject[] monsterPrefab;
 
     public AudioSource audioSource;
+    
+    
+    
+    public TextMeshProUGUI currentScoreText;
+    
+    public GameObject pauseBck;
+
+    public GameObject resumeBtn;
 
     // In percent
     private float brownTileRNG = 15;
@@ -37,6 +46,8 @@ public class GameElementController : MonoBehaviour
     private float high = -1.5f;
 
     private float score = 0;
+    
+    public static int savedScore;
 
     private bool swapBackground = false;
 
@@ -46,11 +57,17 @@ public class GameElementController : MonoBehaviour
 
     private bool side = true;
 
+
+
     // Start is called before the first frame update
     void Start()
     {
+        nb_tiles = 0;
+        Time.timeScale = 1;
         backgroundHeight = background.GetComponent<Renderer>().bounds.extents.y;
         audioSource = GetComponent<AudioSource>();
+        pauseBck.SetActive(false);
+        resumeBtn.SetActive(false);
     }
 
     // Let's keep at least 15 tiles around doodle
@@ -159,6 +176,8 @@ public class GameElementController : MonoBehaviour
     {
         // This could be the score
         score = Math.Max(score, doodle.transform.position.y);
+        savedScore = (int)(score * 100);
+        currentScoreText.text = savedScore.ToString(); 
         //Debug.Log((int)(score * 100));
 
         //Handling Tiles Generation
@@ -206,6 +225,12 @@ public class GameElementController : MonoBehaviour
                     background.transform.position.y + backgroundHeight,
                     transform.position.z);
             swapBackground = !swapBackground;
+        }
+        if (doodle.transform.position.y < -2)
+        {
+            Time.timeScale = 0;
+            SceneLoader.LoadScene("GameOverScene");
+            
         }
     }
     public static void decreaseNbTiles()

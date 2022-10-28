@@ -17,7 +17,8 @@ public class DestroyerBottomController : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Destroy(collision.gameObject);
+        if (!collision.gameObject.CompareTag("Player"))
+            Destroy(collision.gameObject);
         if (collision.gameObject.CompareTag("green_tile") || collision.gameObject.CompareTag("blue_tile") ||
             collision.gameObject.CompareTag("brown_tile"))
         {

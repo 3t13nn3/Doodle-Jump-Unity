@@ -115,13 +115,16 @@ public class PlayerController : MonoBehaviour
 
             if (Input.GetKey(KeyCode.UpArrow) == true)
             {
-                if (isBended)
-                    ChangeSprite(HEAD_UP_WITH_FOOT);
-                else
-                    ChangeSprite(HEAD_UP_WITHOUT_FOOT);
-                if (attackTimer >= 0.15f && !hasObj)
+                if (!hasObj)
                 {
-                    Shoot();
+                    if (isBended)
+                        ChangeSprite(HEAD_UP_WITH_FOOT);
+                    else
+                        ChangeSprite(HEAD_UP_WITHOUT_FOOT);
+                    if (attackTimer >= 0.15f)
+                    {
+                        Shoot();
+                    }
                 }
             }
 
@@ -176,7 +179,10 @@ public class PlayerController : MonoBehaviour
                 angle += 0.02f + Time.deltaTime;
                 Vector3 offset = new Vector3(Mathf.Sin(angle) * 0.2f, Mathf.Cos(angle) * 0.2f, holeObj.transform.position.z);
                 transform.position = holeObj.transform.position + offset;
+                
             }
+            Time.timeScale = 0;
+            SceneLoader.LoadScene("GameOverScene");
         }
     }
 
