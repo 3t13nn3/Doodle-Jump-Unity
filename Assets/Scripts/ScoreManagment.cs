@@ -1,31 +1,31 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using DefaultNamespace;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ScoreManagment : MonoBehaviour
 {
-    
     public TextMeshProUGUI finalScoreText;
 
     public TextMeshProUGUI highestScoreText;
 
     public InputField nameText;
-    
+
     private string savedName;
 
-    [SerializeField] private int savedHighScore;
-    
-    [SerializeField] private playersScore _playersScore = new playersScore();
+    [SerializeField]
+    private int savedHighScore;
 
-    
+    [SerializeField]
+    private playersScore _playersScore = new playersScore();
+
     void LateUpdate()
     {
         finalScoreText.text = GameElementController.savedScore + "";
@@ -35,13 +35,14 @@ public class ScoreManagment : MonoBehaviour
         _playersScore.playerScore = GameElementController.savedScore;
     }
 
-    
     public void saveHighestScore()
     {
         if (PlayerPrefs.HasKey("highestScore"))
         {
-
-            if (PlayerPrefs.GetInt("highestScore") < GameElementController.savedScore)
+            if (
+                PlayerPrefs.GetInt("highestScore") <
+                GameElementController.savedScore
+            )
             {
                 savedHighScore = GameElementController.savedScore;
                 PlayerPrefs.SetInt("highestScore", savedHighScore);
@@ -59,11 +60,12 @@ public class ScoreManagment : MonoBehaviour
     {
         savedName = nameText.text;
     }
+
     public void SaveIntoJson()
     {
         List<playersScore> listAllScore;
         if (File.Exists(Application.dataPath + "/PlayersScores.json"))
-            listAllScore= LoadFromJson();
+            listAllScore = LoadFromJson();
         else
             listAllScore = new List<playersScore>();
         Boolean delete = false;
@@ -76,7 +78,7 @@ public class ScoreManagment : MonoBehaviour
                 find = true;
                 if (_playersScore.playerScore > pl.playerScore)
                 {
-                    listAllScore.Remove(pl);
+                    listAllScore.Remove (pl);
                     delete = true;
                     break;
                 }
@@ -84,39 +86,42 @@ public class ScoreManagment : MonoBehaviour
         }
         if (delete)
         {
-            listAllScore.Add(_playersScore);
+            listAllScore.Add (_playersScore);
             File.Delete(Application.dataPath + "/PlayersScores.json");
             foreach (playersScore pl in listAllScore)
             {
                 string scorePlayer = JsonUtility.ToJson(pl);
-                File.AppendAllText(Application.dataPath + "/PlayersScores.json", scorePlayer);
+                File
+                    .AppendAllText(Application.dataPath + "/PlayersScores.json",
+                    scorePlayer);
             }
         }
-        else {
+        else
+        {
             if (!find)
             {
                 Debug.Log("iciiiii");
                 string scorePlayer = JsonUtility.ToJson(_playersScore);
-                File.AppendAllText(Application.dataPath + "/PlayersScores.json", scorePlayer);
+                File
+                    .AppendAllText(Application.dataPath + "/PlayersScores.json",
+                    scorePlayer);
             }
         }
     }
-    
-    
+
     public static List<playersScore> LoadFromJson()
     {
-   
-        string jsonString = File.ReadAllText (Application.dataPath + "/PlayersScores.json");
+        string jsonString =
+            File.ReadAllText(Application.dataPath + "/PlayersScores.json");
         List<String> jsonListstring = jsonString.Split('}').ToList();
         List<playersScore> listAllScore = new List<playersScore>();
-        for (int i = 0; i < jsonListstring.Count -1 ; i++)
+        for (int i = 0; i < jsonListstring.Count - 1; i++)
         {
             jsonListstring[i] = jsonListstring[i] + "}";
             Debug.Log(jsonListstring[i]);
-            listAllScore.Add(JsonUtility.FromJson<playersScore>(jsonListstring[i]));
+            listAllScore
+                .Add(JsonUtility.FromJson<playersScore>(jsonListstring[i]));
         }
         return listAllScore;
     }
 }
-
-

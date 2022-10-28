@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+
 using Random = UnityEngine.Random;
 
 public class GameElementController : MonoBehaviour
@@ -18,16 +19,16 @@ public class GameElementController : MonoBehaviour
 
     public GameObject holePrefab;
 
+    private Vector3 holePos = new Vector3(0f, 0f, 0f);
+
     public GameObject[] objPrefab;
 
     public GameObject[] monsterPrefab;
 
     public AudioSource audioSource;
-    
-    
-    
+
     public TextMeshProUGUI currentScoreText;
-    
+
     public GameObject pauseBck;
 
     public GameObject resumeBtn;
@@ -46,7 +47,7 @@ public class GameElementController : MonoBehaviour
     private float high = -1.5f;
 
     private float score = 0;
-    
+
     public static int savedScore;
 
     private bool swapBackground = false;
@@ -56,8 +57,6 @@ public class GameElementController : MonoBehaviour
     private int enemyIndex;
 
     private bool side = true;
-
-
 
     // Start is called before the first frame update
     void Start()
@@ -79,6 +78,7 @@ public class GameElementController : MonoBehaviour
             // Choosing which tile we pick
             int tileChoose = 0;
             int rng = rnd.Next(1, 100);
+
             //Debug.Log (rng);
             if (rng < brownTileRNG)
             {
@@ -97,7 +97,10 @@ public class GameElementController : MonoBehaviour
             // Positionnig it well
             float x = (float)(rnd.NextDouble()) * (1.25f - (-1.25f)) + (-1.25f);
             Vector3 tile_pos = new Vector3(x, high + 0.7f, 0f);
-            GameObject tile = Instantiate(tilesToPick[tileChoose], tile_pos, Quaternion.identity);
+            GameObject tile =
+                Instantiate(tilesToPick[tileChoose],
+                tile_pos,
+                Quaternion.identity);
 
             // Generate objects like spring, propeller and jetpack on platform except brown tile
             if (tileChoose != 0 && Random.Range(0.0f, 1.0f) <= objGenPb)
@@ -109,7 +112,8 @@ public class GameElementController : MonoBehaviour
                 else
                     pos.Set(pos.x - 0.15f, pos.y + 0.05f, pos.z);
                 int obj_index = pb <= 0.85 ? 0 : 1;
-                GameObject obj = Instantiate(objPrefab[obj_index], pos, Quaternion.identity);
+                GameObject obj =
+                    Instantiate(objPrefab[obj_index], pos, Quaternion.identity);
                 obj.transform.parent = tile.transform;
             }
 
@@ -126,17 +130,25 @@ public class GameElementController : MonoBehaviour
         }
     }
 
-    bool IsGameObjectCollidedWithTiles(Vector3 o) {
+    bool IsGameObjectCollidedWithTiles(Vector3 o)
+    {
         GameObject[] gtiles = GameObject.FindGameObjectsWithTag("green_tile");
         GameObject[] bltiles = GameObject.FindGameObjectsWithTag("blue_tile");
         GameObject[] brtiles = GameObject.FindGameObjectsWithTag("brown_tile");
         GameObject[] tiles = ConcatArrays(gtiles, bltiles, brtiles);
+
         //GameObject[] tiles = GameObject.FindGameObjectsWithTag("white_tile");
         foreach (GameObject e in tiles)
         {
-            if(Math.Abs(o.x - e.transform.position.x) > 0.2f && Math.Abs(o.y - e.transform.position.y) > 0.2f) {
+            if (
+                Math.Abs(o.x - e.transform.position.x) > 0.25f &&
+                Math.Abs(o.y - e.transform.position.y) > 0.25f
+            )
+            {
                 continue;
-            } else {
+            }
+            else
+            {
                 return true;
             }
         }
@@ -144,31 +156,41 @@ public class GameElementController : MonoBehaviour
         return false;
     }
 
-    void HoleHandler() {
+    void HoleHandler()
+    {
         //if (Random.Range(0.0f, 1.0f) < 0.0005)
-        if (Random.Range(0.0f, 1.0f) < 0.0005)
+        if (doodle.transform.position.y > holePos.y + 15f)
         {
             float x = Random.Range(0.0f, 1.0f) * (1.05f - (-1.05f)) + (-1.05f);
-            Vector3 hole_pos = new Vector3(x, doodle.transform.position.y + 4f, 0f);
-            while (IsGameObjectCollidedWithTiles(hole_pos)) 
-                hole_pos = new Vector3(hole_pos.x - 0.05f, hole_pos.y + 0.2f, 0f);
-            Instantiate(holePrefab, hole_pos, Quaternion.identity);
+            holePos = new Vector3(x, doodle.transform.position.y + 4f, 0f);
+            while (IsGameObjectCollidedWithTiles(holePos))
+            holePos = new Vector3(holePos.x + 0.02f, holePos.y + 0.2f, 0f);
+            Instantiate(holePrefab, holePos, Quaternion.identity);
         }
     }
 
-    void EnemysHandler() {
+    void EnemysHandler()
+    {
         //Debug.Log(enemysCurr[enemyIndex].transform.position);
-        if (Random.Range(0.0f, 1.0f) < 0.0005)
+        if (
+            Random.Range(0.0f, 1.0f) < 0.0005 &&
+            doodle.transform.position.y > 5f
+        )
         {
             float x = Random.Range(0.0f, 1.0f) * (1.05f - (-1.05f)) + (-1.05f);
+
             //pick an enemy
             int monster_index = Random.Range(0, 5);
-            Vector3 monster_pos = new Vector3(x, doodle.transform.position.y + Random.Range(4, 11), 0f);
-            Instantiate(monsterPrefab[monster_index], monster_pos, Quaternion.identity);
+            Vector3 monster_pos =
+                new Vector3(x,
+                    doodle.transform.position.y + Random.Range(4, 11),
+                    0f);
+            Instantiate(monsterPrefab[monster_index],
+            monster_pos,
+            Quaternion.identity);
             audioSource.PlayOneShot(audioSource.clip);
             //Debug.Log(enemysCurr[enemyIndex].transform.position);
         }
-        
     }
 
     // Update is called once per frame
@@ -177,15 +199,14 @@ public class GameElementController : MonoBehaviour
         // This could be the score
         score = Math.Max(score, doodle.transform.position.y);
         savedScore = (int)(score * 100);
-        currentScoreText.text = savedScore.ToString(); 
-        //Debug.Log((int)(score * 100));
+        currentScoreText.text = savedScore.ToString();
 
+        //Debug.Log((int)(score * 100));
         //Handling Tiles Generation
         TilesHandler();
 
         // Handling Hole
-        if(nb_tiles != 0)
-            HoleHandler();
+        if (nb_tiles != 0) HoleHandler();
 
         // Handling Enemys
         EnemysHandler();
@@ -230,13 +251,14 @@ public class GameElementController : MonoBehaviour
         {
             Time.timeScale = 0;
             SceneLoader.LoadScene("GameOverScene");
-            
         }
     }
+
     public static void decreaseNbTiles()
     {
         nb_tiles -= 1;
     }
+
     public static T[] ConcatArrays<T>(params T[][] list)
     {
         var result = new T[list.Sum(a => a.Length)];

@@ -5,9 +5,13 @@ using UnityEngine;
 public class BlueTileController : MonoBehaviour
 {
     private float x_lim_min;
+
     private float x_lim_max;
+
     private Vector3 source;
+
     private Vector3 target;
+
     private bool goTarget;
 
     // Start is called before the first frame update
@@ -22,8 +26,10 @@ public class BlueTileController : MonoBehaviour
         {
             x_target = Random.Range(x_lim_min, x_lim_max);
         }
-        source = new Vector3(x_source, transform.position.y, transform.position.z);
-        target = new Vector3(x_target, transform.position.y, transform.position.z);
+        source =
+            new Vector3(x_source, transform.position.y, transform.position.z);
+        target =
+            new Vector3(x_target, transform.position.y, transform.position.z);
         transform.position = source;
     }
 
@@ -32,12 +38,20 @@ public class BlueTileController : MonoBehaviour
     {
         if (goTarget)
         {
-            transform.position = Vector3.MoveTowards(transform.position, target, 0.5f * Time.deltaTime);
+            transform.position =
+                Vector3
+                    .MoveTowards(transform.position,
+                    target,
+                    0.5f * Time.deltaTime);
             goTarget = transform.position != target;
         }
         else
         {
-            transform.position = Vector3.MoveTowards(transform.position, source, 0.5f * Time.deltaTime);
+            transform.position =
+                Vector3
+                    .MoveTowards(transform.position,
+                    source,
+                    0.5f * Time.deltaTime);
             goTarget = transform.position == source;
         }
     }

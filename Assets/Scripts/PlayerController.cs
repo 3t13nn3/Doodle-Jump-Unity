@@ -177,9 +177,11 @@ public class PlayerController : MonoBehaviour
             else
             {
                 angle += 0.02f + Time.deltaTime;
-                Vector3 offset = new Vector3(Mathf.Sin(angle) * 0.2f, Mathf.Cos(angle) * 0.2f, holeObj.transform.position.z);
+                Vector3 offset =
+                    new Vector3(Mathf.Sin(angle) * 0.2f,
+                        Mathf.Cos(angle) * 0.2f,
+                        holeObj.transform.position.z);
                 transform.position = holeObj.transform.position + offset;
-                
             }
             Time.timeScale = 0;
             SceneLoader.LoadScene("GameOverScene");
@@ -189,16 +191,15 @@ public class PlayerController : MonoBehaviour
     // function which check the collision of the player with other gameobject
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!gameover) 
-        { 
+        if (!gameover)
+        {
             if (other.gameObject.CompareTag("hole"))
             {
-                if (!gameover)
-                    audioSource.PlayOneShot(audioClipArray[6]);
-                    gameover = true;
-                    holeObj = other.gameObject;
+                if (!gameover) audioSource.PlayOneShot(audioClipArray[6]);
+                gameover = true;
+                holeObj = other.gameObject;
             }
-            if (other.gameObject.CompareTag("monster"))
+            if (other.gameObject.CompareTag("monster") && !isFalling)
             {
                 gameover = true;
             }
@@ -217,29 +218,49 @@ public class PlayerController : MonoBehaviour
                     rb.gravityScale = 0.0f;
                     objTimer = 3.5f;
 
-                    ((PropellerController)other.gameObject.GetComponent(typeof(PropellerController))).activate();
+                    (
+                    (PropellerController)
+                    other.gameObject.GetComponent(typeof (PropellerController))
+                    ).activate();
                     audioSource.PlayOneShot(audioClipArray[5]);
                 }
 
                 if (isFalling)
                 {
                     // jump only when tiles are green, blue or white
-                    if ((other.gameObject.CompareTag("green_tile")) || (other.gameObject.CompareTag("blue_tile")))
+                    if (
+                        (other.gameObject.CompareTag("green_tile")) ||
+                        (other.gameObject.CompareTag("blue_tile"))
+                    )
                     {
-                        Jump(defaultJumpHeight);
+                        Jump (defaultJumpHeight);
                         audioSource.PlayOneShot(audioClipArray[0]);
                         ChangeSprite(currentSpriteIndex - 1);
                     }
                     else if (other.gameObject.CompareTag("brown_tile"))
                     {
                         audioSource.PlayOneShot(audioClipArray[4]);
-                        ((BrownTileController)other.gameObject.GetComponent(typeof(BrownTileController))).destroy();
+                        (
+                        (BrownTileController)
+                        other
+                            .gameObject
+                            .GetComponent(typeof (BrownTileController))
+                        ).destroy();
                     }
                     else if (other.gameObject.CompareTag("spring"))
                     {
-                        Jump(springJumpHeight);
-                        ((SpringController)other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
+                        Jump (springJumpHeight);
+                        (
+                        (SpringController)
+                        other.gameObject.GetComponent(typeof (SpringController))
+                        ).changeSprite();
                         audioSource.PlayOneShot(audioClipArray[3]);
+                        ChangeSprite(currentSpriteIndex - 1);
+                    }
+                    else if (other.gameObject.CompareTag("monster"))
+                    {
+                        Jump (defaultJumpHeight);
+                        audioSource.PlayOneShot(audioClipArray[0]);
                         ChangeSprite(currentSpriteIndex - 1);
                     }
                 }

@@ -5,7 +5,9 @@ using UnityEngine;
 public class SpringController : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
+
     public Sprite[] sprites;
+
     private float spriteTimer;
 
     // Start is called before the first frame update

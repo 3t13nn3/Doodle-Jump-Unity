@@ -6,14 +6,14 @@ using UnityEngine;
 public class PauseGame : MonoBehaviour
 {
     public GameObject pauseBck;
-    public GameObject resumeBtn; 
+
+    public GameObject resumeBtn;
 
     public void Pause()
     {
         pauseBck.SetActive(true);
         resumeBtn.SetActive(true);
         Time.timeScale = 0;
-
     }
 
     public void Resume()
@@ -22,5 +22,4 @@ public class PauseGame : MonoBehaviour
         resumeBtn.SetActive(false);
         Time.timeScale = 1;
     }
-   
 }

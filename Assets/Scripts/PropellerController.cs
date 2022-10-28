@@ -5,10 +5,15 @@ using UnityEngine;
 public class PropellerController : MonoBehaviour
 {
     public SpriteRenderer spriteRenderer;
+
     public Sprite[] sprites;
+
     private float spriteTimer;
+
     private float lastTimer;
+
     private bool fly;
+
     private int spriteIndex;
 
     // Start is called before the first frame update

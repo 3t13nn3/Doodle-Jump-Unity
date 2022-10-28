@@ -7,20 +7,22 @@ public class DestroyerBottomController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (!collision.gameObject.CompareTag("Player"))
             Destroy(collision.gameObject);
-        if (collision.gameObject.CompareTag("green_tile") || collision.gameObject.CompareTag("blue_tile") ||
-            collision.gameObject.CompareTag("brown_tile"))
+        if (
+            collision.gameObject.CompareTag("green_tile") ||
+            collision.gameObject.CompareTag("blue_tile") ||
+            collision.gameObject.CompareTag("brown_tile")
+        )
         {
             GameElementController.decreaseNbTiles();
         }
