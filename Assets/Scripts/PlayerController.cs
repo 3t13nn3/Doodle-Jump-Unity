@@ -139,22 +139,22 @@ public class PlayerController : MonoBehaviour
             // jump only when tiles are green, blue or white
             if ((other.gameObject.CompareTag("green_tile")) || (other.gameObject.CompareTag("blue_tile")))
             {
-                Jump (defaultJumpHeight);
+                Jump(defaultJumpHeight);
                 audioSource.PlayOneShot(audioClipArray[0]);
                 ChangeSprite(currentSpriteIndex - 1);
             }
-            if (other.gameObject.CompareTag("spring"))
+            else if (other.gameObject.CompareTag("brown_tile"))
+            {
+                audioSource.PlayOneShot(audioClipArray[4]);
+                ((BrownTileController)other.gameObject.GetComponent(typeof(BrownTileController))).destroy();
+            }
+            else if (other.gameObject.CompareTag("spring"))
             {
                 Jump(springJumpHeight);
-                ((SpringController) other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
+                ((SpringController)other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
                 audioSource.PlayOneShot(audioClipArray[3]);
                 ChangeSprite(currentSpriteIndex - 1);
             }
-            //if (other.gameObject.CompareTag("brown_tile"))
-            //{
-            //    Debug.Log("destroy brown tile");
-            //    Destroy(other.gameObject);
-            //}
         }
 
         if (other.gameObject.CompareTag("hole")) {

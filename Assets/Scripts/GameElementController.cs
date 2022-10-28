@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class GameElement : MonoBehaviour
+public class GameElementController : MonoBehaviour
 {
     public GameObject[] tilesToPick;
 
@@ -27,7 +28,7 @@ public class GameElement : MonoBehaviour
 
     private float objGenPb = 0.8f;
 
-    private List<GameObject> tiles = new List<GameObject>();
+    public static int nb_tiles = 0;
 
     public List<GameObject> enemys = new List<GameObject>();
 
@@ -64,7 +65,7 @@ public class GameElement : MonoBehaviour
     void TilesHandler()
     {
         System.Random rnd = new System.Random();
-        while (tiles.Count < 15)
+        while (nb_tiles < 15)
         {
             // Choosing which tile we pick
             int tileChoose = 0;
@@ -84,25 +85,18 @@ public class GameElement : MonoBehaviour
                 tileChoose = 2;
             }
 
-            // Creating it
-            GameObject curr = GameObject.Instantiate(tilesToPick[tileChoose]);
-
             // Positionnig it well
             float x = (float)(rnd.NextDouble()) * (1.25f - (-1.25f)) + (-1.25f);
-            curr.transform.position = new Vector3(x, high + 0.7f, 0f);
-            curr.SetActive(true);
-
-            SpriteRenderer spriteRenderer = curr.GetComponent<SpriteRenderer>();
-            spriteRenderer.maskInteraction =
-                SpriteMaskInteraction.VisibleOutsideMask;
-            tiles.Add (curr);
+            Vector3 tile_pos = new Vector3(x, high + 0.7f, 0f);
+            GameObject tile = Instantiate(tilesToPick[tileChoose], tile_pos, Quaternion.identity);
 
             // Generate objects like spring, propeller and jetpack on platform except brown tile
             if (tileChoose != 0 && Random.Range(0, 1) <= objGenPb)
             {
-                Vector3 pos = curr.transform.position;
+                Vector3 pos = tile_pos;
                 pos.Set(pos.x, pos.y + 0.2f, pos.z);
-                Instantiate(springPrefab, pos, Quaternion.identity);
+                GameObject obj = Instantiate(springPrefab, pos, Quaternion.identity);
+                obj.transform.parent = tile.transform;
             }
 
             if (tileChoose != 0)
@@ -113,17 +107,17 @@ public class GameElement : MonoBehaviour
             {
                 high += (float)(rnd.NextDouble()) * (0.1f - (-0.1f)) + (-0.1f);
             }
-        }
 
-        if (doodle.transform.position.y - tiles[0].transform.position.y > 3.25f)
-        {
-            Destroy(tiles[0]);
-            tiles.RemoveAt(0);
+            nb_tiles += 1;
         }
     }
 
     bool IsGameObjectCollidedWithTiles(GameObject o) {
-        
+        GameObject[] gtiles = GameObject.FindGameObjectsWithTag("green_tile");
+        GameObject[] bltiles = GameObject.FindGameObjectsWithTag("blue_tile");
+        GameObject[] brtiles = GameObject.FindGameObjectsWithTag("brown_tile");
+        GameObject[] tiles = ConcatArrays(gtiles, bltiles, brtiles);
+        //GameObject[] tiles = GameObject.FindGameObjectsWithTag("white_tile");
         foreach (GameObject e in tiles)
         {
             if(Math.Abs(o.transform.position.x - e.transform.position.x) > 0.2f && Math.Abs(o.transform.position.y - e.transform.position.y) > 0.2f) {
@@ -171,7 +165,7 @@ public class GameElement : MonoBehaviour
         TilesHandler();
 
         // Handling Hole
-        if(tiles.Count != 0)
+        if(nb_tiles != 0)
             HoleHandler();
 
         // Handling Enemys
@@ -213,5 +207,20 @@ public class GameElement : MonoBehaviour
                     transform.position.z);
             swapBackground = !swapBackground;
         }
+    }
+    public static void decreaseNbTiles()
+    {
+        nb_tiles -= 1;
+    }
+    public static T[] ConcatArrays<T>(params T[][] list)
+    {
+        var result = new T[list.Sum(a => a.Length)];
+        int offset = 0;
+        for (int x = 0; x < list.Length; x++)
+        {
+            list[x].CopyTo(result, offset);
+            offset += list[x].Length;
+        }
+        return result;
     }
 }
