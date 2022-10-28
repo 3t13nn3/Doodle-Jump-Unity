@@ -17,7 +17,7 @@ public class GameElementController : MonoBehaviour
 
     public GameObject hole;
 
-    public GameObject springPrefab;
+    public GameObject[] objPrefab;
 
     // In percent
     private float brownTileRNG = 15;
@@ -54,7 +54,7 @@ public class GameElementController : MonoBehaviour
         System.Random rnd = new System.Random();
         enemyIndex = rnd.Next(1, 5);
 
-        hole = Instantiate(hole, new Vector3(0f, -10f, 0f), Quaternion.identity);
+        //hole = Instantiate(hole, new Vector3(0f, -10f, 0f), Quaternion.identity);
         foreach (var e in enemys)
         {
             enemysCurr.Add(Instantiate(e, new Vector3(0f, -10f, 0f), Quaternion.identity));
@@ -93,9 +93,13 @@ public class GameElementController : MonoBehaviour
             // Generate objects like spring, propeller and jetpack on platform except brown tile
             if (tileChoose != 0 && Random.Range(0, 1) <= objGenPb)
             {
+                int obj_index = Random.Range(0, 2);
                 Vector3 pos = tile_pos;
-                pos.Set(pos.x, pos.y + 0.2f, pos.z);
-                GameObject obj = Instantiate(springPrefab, pos, Quaternion.identity);
+                if (obj_index == 0)
+                    pos.Set(pos.x, pos.y + 0.2f, pos.z);
+                else if (obj_index == 1)
+                    pos.Set(pos.x - 0.15f, pos.y + 0.05f, pos.z);
+                GameObject obj = Instantiate(objPrefab[obj_index], pos, Quaternion.identity);
                 obj.transform.parent = tile.transform;
             }
 
@@ -149,7 +153,7 @@ public class GameElementController : MonoBehaviour
             //pick an enemy
             enemyIndex = rnd.Next(1, 5);
             enemysCurr[enemyIndex].transform.position = new Vector3(x, doodle.transform.position.y + rnd.Next(4, 10), 0f);
-            Debug.Log(enemysCurr[enemyIndex].transform.position);
+            //Debug.Log(enemysCurr[enemyIndex].transform.position);
         }
         
     }

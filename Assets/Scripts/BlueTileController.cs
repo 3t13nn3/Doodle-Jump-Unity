@@ -30,8 +30,6 @@ public class BlueTileController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(target);
-        Debug.Log(source);
         if (goTarget)
         {
             transform.position = Vector3.MoveTowards(transform.position, target, 0.5f * Time.deltaTime);

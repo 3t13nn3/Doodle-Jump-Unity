@@ -26,6 +26,12 @@ public class PlayerController : MonoBehaviour
 
     private bool isBended;
 
+    private bool hasObj;
+
+    private float objTimer;
+
+    private GameObject myObj;
+
     private float bendedTimer;
 
     private bool isAttacking;
@@ -40,6 +46,11 @@ public class PlayerController : MonoBehaviour
     private readonly float defaultJumpHeight = 5f;
 
     private readonly float springJumpHeight = 8f;
+
+    // two fly speed
+    private readonly float propellerSpeed = 5f;
+
+    private readonly float jetpackSpeed = 8f;
 
     private readonly int LEFT_SIDE_WITH_BENDED_LEG = 0;
 
@@ -65,6 +76,7 @@ public class PlayerController : MonoBehaviour
 
         rb = GetComponent<Rigidbody2D>();
         isFalling = true;
+        hasObj = false;
     }
 
     // Update is called once per frame
@@ -98,7 +110,7 @@ public class PlayerController : MonoBehaviour
                 ChangeSprite(HEAD_UP_WITH_FOOT);
             else
                 ChangeSprite(HEAD_UP_WITHOUT_FOOT);
-            if (attackTimer >= 0.15f)
+            if (attackTimer >= 0.15f && !hasObj)
             {
                 Shoot();
             }
@@ -123,8 +135,23 @@ public class PlayerController : MonoBehaviour
 
         bendedTimer += Time.deltaTime;
         attackTimer += Time.deltaTime;
-        transform.position += movement * 2.5f * Time.deltaTime;
-        isFalling = rb.velocity.y <= 0;
+        if (objTimer <= 0.0f && myObj != null)
+        {
+            hasObj = false;
+            rb.gravityScale = 1.0f;
+        }
+
+        if (hasObj && objTimer > 0.0f)
+        {
+            transform.position += movement * 2.5f * Time.deltaTime;
+            rb.velocity = transform.up * propellerSpeed;
+            objTimer -= Time.deltaTime;
+        }
+        else
+        {
+            transform.position += movement * 2.5f * Time.deltaTime;
+            isFalling = rb.velocity.y <= 0;
+        }
 
         // Handling Overflow only for the init one
         OverflowHandle();
@@ -134,36 +161,56 @@ public class PlayerController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         // player enter in collision only when he is falling
-        if (isFalling)
+        if (!hasObj)
         {
-            // jump only when tiles are green, blue or white
-            if ((other.gameObject.CompareTag("green_tile")) || (other.gameObject.CompareTag("blue_tile")))
+            if (other.gameObject.CompareTag("propeller"))
             {
-                Jump(defaultJumpHeight);
-                audioSource.PlayOneShot(audioClipArray[0]);
-                ChangeSprite(currentSpriteIndex - 1);
+                hasObj = true;
+                myObj = other.gameObject;
+
+                Vector3 pos = transform.position;
+                pos.Set(pos.x - 0.18f, pos.y + 0.07f, pos.z);
+                other.transform.position = pos;
+                other.transform.parent = gameObject.transform;
+                rb.gravityScale = 0.0f;
+                objTimer = 3.5f;
+
+                ((PropellerController)other.gameObject.GetComponent(typeof(PropellerController))).activate();
+                audioSource.PlayOneShot(audioClipArray[5]);
             }
-            else if (other.gameObject.CompareTag("brown_tile"))
+
+            if (isFalling)
             {
-                audioSource.PlayOneShot(audioClipArray[4]);
-                ((BrownTileController)other.gameObject.GetComponent(typeof(BrownTileController))).destroy();
-            }
-            else if (other.gameObject.CompareTag("spring"))
-            {
-                Jump(springJumpHeight);
-                ((SpringController)other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
-                audioSource.PlayOneShot(audioClipArray[3]);
-                ChangeSprite(currentSpriteIndex - 1);
+                // jump only when tiles are green, blue or white
+                if ((other.gameObject.CompareTag("green_tile")) || (other.gameObject.CompareTag("blue_tile")))
+                {
+                    Jump(defaultJumpHeight);
+                    audioSource.PlayOneShot(audioClipArray[0]);
+                    ChangeSprite(currentSpriteIndex - 1);
+                }
+                else if (other.gameObject.CompareTag("brown_tile"))
+                {
+                    audioSource.PlayOneShot(audioClipArray[4]);
+                    ((BrownTileController)other.gameObject.GetComponent(typeof(BrownTileController))).destroy();
+                }
+                else if (other.gameObject.CompareTag("spring"))
+                {
+                    Jump(springJumpHeight);
+                    ((SpringController)other.gameObject.GetComponent(typeof(SpringController))).changeSprite();
+                    audioSource.PlayOneShot(audioClipArray[3]);
+                    ChangeSprite(currentSpriteIndex - 1);
+                }
             }
         }
+        else
+        {
+            if (other.gameObject.CompareTag("hole")) {
 
-        if (other.gameObject.CompareTag("hole")) {
-
-            //rb.velocity = new Vector3(0f, 0f, 0f);
-            rb.bodyType = RigidbodyType2D.Static;
-            doodle.transform.position = Vector3.MoveTowards(doodle.transform.position, hole.transform.position, 20 * Time.deltaTime);    
+                //rb.velocity = new Vector3(0f, 0f, 0f);
+                rb.bodyType = RigidbodyType2D.Static;
+                doodle.transform.position = Vector3.MoveTowards(doodle.transform.position, hole.transform.position, 20 * Time.deltaTime);    
+            }
         }
-
     }
 
     // player jump function
